@@ -1,0 +1,30 @@
+{
+  "name": "bodymovin-to-avd",
+  "version": "1.0.5",
+  "description": "Bodymovin to AVD converter",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bodymovin/bodymovin-to-avd.git"
+  },
+  "author": "Hernan Torrisi <hernantorrisi@gmail.com> (http://codepen.io/airnan/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bodymovin/bodymovin-to-avd/issues"
+  },
+  "homepage": "https://github.com/bodymovin/bodymovin-to-avd#readme",
+  "dependencies": {
+    "transformation-matrix": "^1.4.0",
+    "transformatrix": "^1.1.1",
+    "xml": "^1.0.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^7.3.0",
+    "browserify": "^14.4.0"
+  }
+}
