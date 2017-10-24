@@ -16,13 +16,13 @@ function masker(state) {
 	var clipPathString = '';
 	var masksList = [];
 
-	function buildMask(path) {
+	function buildMask(path, pathName) {
 		if(!path) {
 			return;
 		}
 		var clipPath = node.createNode('clipPath', clipName);
 		node.addAttribute(clipPath,'id', clipName);
-		var pathNode = node.createNode('path');
+		var pathNode = node.createNode('path', pathName);
 		node.nestChild(clipPath, pathNode);
 		node.addAttribute(pathNode,'d', path);
 		targets.addTarget(clipPath);
@@ -61,10 +61,11 @@ function masker(state) {
 		var currentClipPathString = '';
 		var animatedProp, prevNode, maskNode;
 		clipName = name + naming.CLIP_NAME + '_' + maskCount;
+		var pathName = clipName + naming.PATH_NAME;
 		for (i = 0; i < len; i+= 1) {
 			if (paths[i].type === 'i') {
 				if (paths[i].pt.a === 1) {
-					animatedProp = property.createAnimatedPathData(clipName, paths[i].pt.k, null, clipPathString, state.timeOffset);
+					animatedProp = property.createAnimatedPathData(pathName, paths[i].pt.k, null, clipPathString, state.timeOffset);
 					targets.addTarget(animatedProp);
 					clipPathString += ' ' + createPathData(paths[i].pt.k[0].s[0], null);
 				} else {
@@ -72,7 +73,7 @@ function masker(state) {
 				}
 			} else if (paths[i].type === 'a') {
 				if (paths[i].pt.a === 1) {
-					animatedProp = property.createAnimatedPathData(clipName, paths[i].pt.k, null, clipPathString, state.timeOffset);
+					animatedProp = property.createAnimatedPathData(pathName, paths[i].pt.k, null, clipPathString, state.timeOffset);
 					targets.addTarget(animatedProp);
 					clipPathString += ' ' + createPathData(paths[i].pt.k[0].s[0], null);
 				} else {
@@ -96,7 +97,7 @@ function masker(state) {
 				}
 			}
 		}
-		buildMask(clipPathString);
+		buildMask(clipPathString, pathName);
 		/*maskNode = buildMask(clipPathString);
 		if(maskNode) {
 			if(prevNode) {
