@@ -87,7 +87,7 @@ function createVectorDrawable(width, height) {
 	 	_avd.processAnimation(animation)
 	 	.then(_avd.exportNode)
 	 	.then(function(avdNode){
-	 		var format = config.xml_formatted ? ' ' : '';
+	 		var format = config.xml_formatted ? '   ' : '';
  			var xmlString = xml(avdNode, format);
  			resolve(xmlString);
 

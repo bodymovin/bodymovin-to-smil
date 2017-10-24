@@ -23,14 +23,14 @@ function layer(state) {
 
 	function exportNode(name, parentWorkAreaOffset) {
 		var groupName = name + naming.GROUP_NAME;
-		var maskCount = factoryInstance.getMasks(name);
+		var rootMasks = factoryInstance.getMasks(name);
 		var gr = node.createNode('g', groupName);
 		var subGr;
-		if(maskCount) {
-			var i, len = maskCount;
+		if(rootMasks.length) {
+			var i, len = rootMasks.length;
 			for(i = 0; i < len; i += 1) {
 				subGr = node.createNode('g');
-				node.addAttribute(subGr, 'clip-path','url(#' + name + naming.CLIP_NAME + '_' + i + ')')
+				node.addAttribute(subGr, 'clip-path','url(#' + rootMasks[i] + ')')
 				node.nestChild(gr, subGr)
 				this.createNodeInstance(subGr, groupName + naming.GROUP_NAME + '_' + i);
 			}
