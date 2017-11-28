@@ -3,6 +3,8 @@ var node = require ('../node');
 var naming = require ('../naming');
 var property = require ('../property');
 var targets = require ('../targets/targets');
+var fonts = require('../helpers/fonts');
+var timing = require('../helpers/timing');
 
 function svg(_animationData) {
 
@@ -96,6 +98,10 @@ function svg(_animationData) {
 	function processAnimation(_animationData) {
 		var promise = new Promise(function(resolve, reject){
 			animationData = _animationData;
+			if(animationData.fonts) {
+				fonts.addFonts(animationData.fonts.list);
+			}
+			timing.setTime(animationData.ip, animationData.op, animationData.fr)
 			property.setFrameRate(animationData.fr);
 			property.setTimeCap(animationData.op);
 			_composition = compositionFactory(_animationData, _animationData.assets)

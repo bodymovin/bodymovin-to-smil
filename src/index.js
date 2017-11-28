@@ -3,18 +3,8 @@
 var xml = require('xml');
 var fs = require('fs');
 var node = require('./node');
-var avdFactory = require('./avd/avd');
 var svgFactory = require('./svg/svg');
 var config = require('./config');
-
-function addTargetsToAVD(targets, avd) {
-	var target;
-	var i, len = targets.length;
-	for(i = 0; i < len; i += 1) {
-		target = targets[i];
-		node.nestChild(avd, target);
-	} 
-}
 
 function createAnimatedVectorObject() {
 	var attributes = [{
@@ -83,12 +73,12 @@ function createVectorDrawable(width, height) {
  	return new Promise(function(resolve, reject){
  		var targets = [];
 	 	//
-	 	var _avd = svgFactory();
-	 	_avd.processAnimation(animation)
-	 	.then(_avd.exportNode)
-	 	.then(function(avdNode){
+	 	var _svg = svgFactory();
+	 	_svg.processAnimation(animation)
+	 	.then(_svg.exportNode)
+	 	.then(function(svgNode){
 	 		var format = config.xml_formatted ? '   ' : '';
- 			var xmlString = xml(avdNode, format);
+ 			var xmlString = xml(svgNode, format);
  			resolve(xmlString);
 
 	 	}).catch(function(err){

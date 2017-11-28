@@ -10,7 +10,9 @@ var long_naming = {
 	PARENT_NAME: '_PARENT',
 	CLIP_NAME: '_CLIP',
 	SOLID_NAME: '_SOLID',
-	TIME_NAME: '_TIME'
+	TIME_NAME: '_TIME',
+	TEXT_NAME: '_TEXT',
+	TEXT_SPAN_NAME: '_TEXT_SPAN'
 }
 var short_naming = {
 	GROUP_NAME: '_G',
@@ -22,7 +24,9 @@ var short_naming = {
 	PARENT_NAME: '_N',
 	CLIP_NAME: '_C',
 	SOLID_NAME: '_S',
-	TIME_NAME: '_M'
+	TIME_NAME: '_M',
+	TEXT_NAME: '_X',
+	TEXT_SPAN_NAME: '_A'
 }
 
 var naming = config.naming === 'short' ? short_naming : long_naming

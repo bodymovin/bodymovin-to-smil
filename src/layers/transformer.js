@@ -9,13 +9,6 @@ function transformer(state) {
 		transforms.push(transformData);
 	}
 
-	function transformNode(node) {
-		var i, len = transforms.length;
-		for(i = 0; i < len; i += 1) {
-			
-		}
-	}
-
 	function setSiblings(_siblings) {
 		state.siblings = _siblings;
 	}
@@ -39,9 +32,9 @@ function transformer(state) {
 			var parentData = getLayerDataByIndex(parent);
 			var nestedArray;
 			if (useContainerFlag) {
-				nestedArray = createTransformGroup(name, parentData.ks, state.timeOffset, state.frameRate, group);
+				nestedArray = createTransformGroup(name, JSON.parse(JSON.stringify(parentData.ks)), state.timeOffset, state.frameRate, group);
 			} else {
-				nestedArray = [group].concat(createTransformGroup(name, parentData.ks, state.timeOffset, state.frameRate, null));
+				nestedArray = [group].concat(createTransformGroup(name, JSON.parse(JSON.stringify(parentData.ks)), state.timeOffset, state.frameRate, null));
 			}
 			var containerParentGroup = node.nestArray(nestedArray);
 			containerParentGroup = buildParenting(parentData.parent, containerParentGroup, name, false);

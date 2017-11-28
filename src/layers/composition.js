@@ -2,6 +2,7 @@ var layer = require ('./layer');
 var node = require ('../node');
 var shapeFactory = require ('../layers/shape/shape');
 var solidFactory = require ('../layers/solid/solid');
+var textFactory = require ('../layers/text/text');
 var naming = require('../naming');
 
 function composition(compositionData, assets) {
@@ -45,6 +46,8 @@ function composition(compositionData, assets) {
 				layer = composition(compLayersData[i], assets);
 			} else if(compLayersData[i].ty === 1) {
 				layer = solidFactory(compLayersData[i]);
+			} else if(compLayersData[i].ty === 5) {
+				layer = textFactory(compLayersData[i]);
 			} else {
 				layer = null;
 			}

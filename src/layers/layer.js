@@ -40,7 +40,15 @@ function layer(state) {
 		}
 		var parentNode = gr;
 		if(state.layerData.ks){
-			var transformArray = createTransformGroup(groupName, state.layerData.ks, state.timeOffset, parentNode);
+
+			if (state.layerData.ks.o.a === 1) {
+				animatedProperty = property.createAnimatedProperty(groupName, 'opacity', state.layerData.ks.o.k, state.timeOffset);
+				targets.addTarget(animatedProperty);
+			} else if(state.layerData.ks.o.k !== 100) {
+				node.addAttribute(gr,'opacity', state.layerData.ks.o.k*0.01);
+			}
+
+			var transformArray = createTransformGroup(groupName, JSON.parse(JSON.stringify(state.layerData.ks)), state.timeOffset, parentNode);
 			parentNode = node.nestArray(transformArray);
 			var canReuse = false; //Todo find out if parent has not animated properties to reuse
 			parentNode = factoryInstance.buildParenting(state.layerData.parent, parentNode, groupName, canReuse);
@@ -56,23 +64,26 @@ function layer(state) {
 		var animatedProp;
 		var timeCap = property.getTimeCap();
 		if(layerData.ip + state.timeOffset > 0 || layerData.op + state.timeOffset + parentWorkAreaOffset < timeCap) {
-			if(targets.getTargetByNameAndProperty(name,'scaleX') || targets.getTargetByNameAndProperty(name,'scaleY')) {
 				name += naming.TIME_NAME;
 				var timeGroup = node.createNode('g', name);
 				node.nestChild(timeGroup, group);
 				group = timeGroup;
-			}
-			var scaleX = (node.getAttribute(group, 'android:scaleX') || 1) * 100;
-			var scaleY = (node.getAttribute(group, 'android:scaleY') || 1) * 100;
+				var limits = [];
 			if(layerData.ip + state.timeOffset > 0) {
-				animatedProp = property.createAnimatedProperty(name, 'scaleX', [{s:[0,0,100],e:[scaleX,scaleY,100],t:0},{t:0}], layerData.ip + state.timeOffset);
-				targets.addTarget(animatedProp);
-				
+				limits.push({s:[0],e:[0],t:0,o:{x:0,y:0},i:{x:0,y:0}},{s:[0],e:[100],o:{x:0,y:0},i:{x:0,y:0},t:layerData.ip},{s:[100], e:[100],o:{x:0,y:0},i:{x:0,y:0}, t:layerData.ip + 0.0001});
+			} else {
+				limits.push({s:[100],e:[100],t:0,o:{x:0,y:0},i:{x:0,y:0}});
 			}
 			if(layerData.op + state.timeOffset + parentWorkAreaOffset < timeCap) {
-				animatedProp = property.createAnimatedProperty(name, 'scaleY', [{s:[scaleX,scaleY,100],e:[0,0,100],t:0},{t:0}], layerData.op + state.timeOffset + parentWorkAreaOffset);
-				targets.addTarget(animatedProp);
+				limits.push({s:[100],t:layerData.op + parentWorkAreaOffset ,o:{x:0,y:0},i:{x:0,y:0}, e:[0]},{s:[0],e:[0],o:{x:0,y:0},i:{x:0,y:0},t:layerData.op + parentWorkAreaOffset + 0.000001});
 			}
+			/*if(layerData.op + state.timeOffset + parentWorkAreaOffset < timeCap) {
+				limits.push({s:[0],e:[100],t:0},{s:[100], e:[100], t:layerData.ip + state.timeOffset});
+			}*/
+			//layerData.op + state.timeOffset + parentWorkAreaOffset
+			//animatedProp = property.createAnimatedProperty(name, 'opacity', limits, layerData.op + state.timeOffset + parentWorkAreaOffset);
+			animatedProp = property.createAnimatedProperty(name, 'opacity', limits, state.timeOffset);
+			targets.addTarget(animatedProp);
 		}
 		return group;
 	}

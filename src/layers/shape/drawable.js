@@ -240,35 +240,39 @@ function drawable(_drawableData, _level, _timeOffset) {
 			if (color.a === 0) {
 				hexColor = rgbHex(color.k[0]*255,color.k[1]*255,color.k[2]*255);
 				attributes.push({
-					key: 'android:strokeColor',
+					key: 'stroke',
 					value: hexColor
 				})
 			} else {
 				hexColor = rgbHex(color.k[0].s[0]*255,color.k[0].s[1]*255,color.k[0].s[2]*255)
 				attributes.push({
-					key: 'android:strokeColor',
+					key: 'stroke',
 					value: hexColor
 				})
 				animatedProp = property.createAnimatedProperty(pathName, 'strokeColor', color.k, timeOffset);
 				targets.addTarget(animatedProp);
 			}
 			attributes.push({
-				key: 'android:strokeLineCap',
+				key: 'stroke-linecap',
 				value: 'round'
 			})
 			attributes.push({
-				key: 'android:strokeLineJoin',
+				key: 'stroke-linejoin',
 				value: 'round'
+			})
+			attributes.push({
+				key: 'fill',
+				value: 'none'
 			})
 			
 			if(drawableData.w.a === 0) {
 				attributes.push({
-					key: 'android:strokeWidth',
+					key: 'stroke-width',
 					value: drawableData.w.k
 				})
 			} else {
 				attributes.push({
-					key: 'android:strokeWidth',
+					key: 'stroke-width',
 					value: drawableData.w.k[0].s
 				})
 				animatedProp = property.createAnimatedProperty(pathName, 'strokeWidth', drawableData.w.k, timeOffset);
@@ -276,12 +280,12 @@ function drawable(_drawableData, _level, _timeOffset) {
 			}
 			if(drawableData.o.a === 0) {
 				attributes.push({
-					key: 'android:strokeAlpha',
+					key: 'stroke-opacity',
 					value: drawableData.o.k * 0.01
 				})
 			} else {
 				attributes.push({
-					key: 'android:strokeAlpha',
+					key: 'stroke-opacity',
 					value: drawableData.o.k[0].s * 0.01
 				})
 				animatedProp = property.createAnimatedProperty(pathName, 'strokeAlpha', drawableData.o.k, timeOffset);
@@ -292,13 +296,13 @@ function drawable(_drawableData, _level, _timeOffset) {
 			if (color.a === 0) {
 				hexColor = rgbHex(color.k[0]*255,color.k[1]*255,color.k[2]*255)
 				attributes.push({
-					key: 'android:fillColor',
+					key: 'fill',
 					value: hexColor
 				})
 			} else {
 				hexColor = rgbHex(color.k[0].s[0]*255,color.k[0].s[1]*255,color.k[0].s[2]*255)
 				attributes.push({
-					key: 'android:fillColor',
+					key: 'fill',
 					value: hexColor
 				})
 				animatedProp = property.createAnimatedProperty(pathName, 'fillColor', color.k, timeOffset);
@@ -306,20 +310,20 @@ function drawable(_drawableData, _level, _timeOffset) {
 			}
 			if(drawableData.o.a === 0) {
 				attributes.push({
-					key: 'android:fillAlpha',
+					key: 'fill-opacity',
 					value: drawableData.o.k * 0.01
 				})
 			} else {
 				attributes.push({
-					key: 'android:fillAlpha',
+					key: 'fill-opacity',
 					value: drawableData.o.k[0].s * 0.01
 				})
 				animatedProp = property.createAnimatedProperty(pathName, 'fillAlpha', drawableData.o.k, timeOffset);
 				targets.addTarget(animatedProp);
 			}
 			attributes.push({
-				key: 'android:fillType',
-				value: drawableData.r === 1 ? 'nonZero' : 'evenOdd'
+				key: 'fill-rule',
+				value: drawableData.r === 1 ? 'nonzero' : 'evenodd'
 			})
 		}
 		return attributes;
@@ -338,6 +342,9 @@ function drawable(_drawableData, _level, _timeOffset) {
 		if(transform.r && transform.r.a === 1) {
 			return true;
 		}
+		if(transform.o && transform.o.a === 1 || transform.o.k !== 100) {
+			return true;
+		}
 		return false;
 	}
 	
@@ -345,16 +352,20 @@ function drawable(_drawableData, _level, _timeOffset) {
 		if (closed) {
 			return;
 		}
-		paths.push({path: path, transforms: transforms, level: level, trimPath: trimPath});
+		paths.push({type: 'path', path: path, transforms: transforms, level: level, trimPath: trimPath});
 	}
 	
 	function addEllipse(shapeData, transforms, level, trimPath) {
 		if (closed) {
 			return;
 		}
-		var pathConverted = convertEllipseToPath(shapeData);
-		if(pathConverted) {
-			paths.push({path: pathConverted, transforms: transforms, level: level, trimPath: trimPath});
+		if(shapeData.s.a === 0 && shapeData.p.a === 0) {
+			var pathConverted = convertEllipseToPath(shapeData);
+			if(pathConverted) {
+				paths.push({type: 'path', path: pathConverted, transforms: transforms, level: level, trimPath: trimPath});
+			}
+		} else {
+			paths.push({type:'ellipse', s: shapeData.s, p: shapeData.p, transforms: transforms, level: level, trimPath: trimPath});
 		}
 	}
 	
@@ -362,9 +373,13 @@ function drawable(_drawableData, _level, _timeOffset) {
 		if (closed) {
 			return;
 		}
-		var pathConverted = convertRectangleToPath(shapeData);
-		if(pathConverted) {
-			paths.push({path: pathConverted, transforms: transforms, level: level, trimPath: trimPath});
+		if(shapeData.r.a === 0 && shapeData.s.a === 0 && shapeData.p.a === 0) {
+			var pathConverted = convertRectangleToPath(shapeData);
+			if(pathConverted) {
+				paths.push({type:'path', path: pathConverted, transforms: transforms, level: level, trimPath: trimPath});
+			}
+		} else {
+			paths.push({type:'rect', r: shapeData.r, s: shapeData.s, p: shapeData.p, transforms: transforms, level: level, trimPath: trimPath});
 		}
 	}
 
@@ -377,6 +392,130 @@ function drawable(_drawableData, _level, _timeOffset) {
 			i += 1;
 		}
 		return true;
+	}
+
+	function buildNewEllipse(pathData, pathName) {
+		var pathAttributes = [].concat(getDrawingAttributes(pathName));
+		if(pathData.s.a === 0) {
+			pathAttributes.push({
+				key: 'cx',
+				value: pathData.s.k[0]
+			})
+			pathAttributes.push({
+				key: 'cy',
+				value: pathData.s.k[1]
+			})
+			pathAttributes.push({
+				key: 'transform',
+				value: 'translate(' + -pathData.s.k[0]/2 + ' ' + -pathData.s.k[1]/2 + ')'
+			})
+		} else {
+			animatedProp = property.createAnimatedProperty(pathName, 'ellipseWidth', pathData.s.k, timeOffset);
+			targets.addTarget(animatedProp);
+			animatedProp = property.createAnimatedProperty(pathName, 'ellipseHeight', pathData.s.k, timeOffset);
+			targets.addTarget(animatedProp);
+		}
+		if(pathData.p.a === 0) {
+			pathAttributes.push({
+				key: 'cx',
+				value: pathData.p.k[0]
+			})
+			pathAttributes.push({
+				key: 'cy',
+				value: pathData.p.k[1]
+			})
+		} else {
+			animatedProp = property.createAnimatedProperty(pathName, 'ellipsePositionX', pathData.p.k, timeOffset);
+			targets.addTarget(animatedProp);
+			animatedProp = property.createAnimatedProperty(pathName, 'ellipsePositionY', pathData.p.k, timeOffset);
+			targets.addTarget(animatedProp);
+		}
+
+		var pathNode = node.createNodeWithAttributes('ellipse', pathAttributes, pathName);
+		var finalNode = pathNode;
+
+		var transforms = pathData.transforms;
+		var j, jLen = pathData.level;
+
+		if(!canFlattenPath(transforms, jLen)){
+			for(j = jLen - 1; j >= 0; j -= 1) {
+				nestedArray = [finalNode].concat(createTransformGroup(pathName + naming.GROUP_NAME +'_' + j, JSON.parse(JSON.stringify(transforms[j])), timeOffset));
+				finalNode = node.nestArray(nestedArray);
+			}
+		}
+
+		return finalNode;
+	}
+
+	function buildNewRect(pathData, pathName) {
+		var pathAttributes = [].concat(getDrawingAttributes(pathName));
+		if(pathData.s.a === 0) {
+			pathAttributes.push({
+				key: 'width',
+				value: pathData.s.k[0]
+			})
+			pathAttributes.push({
+				key: 'height',
+				value: pathData.s.k[1]
+			})
+			pathAttributes.push({
+				key: 'transform',
+				value: 'translate(' + -pathData.s.k[0]/2 + ' ' + -pathData.s.k[1]/2 + ')'
+			})
+		} else {
+			animatedProp = property.createAnimatedProperty(pathName, 'rectWidth', pathData.s.k, timeOffset);
+			targets.addTarget(animatedProp);
+			animatedProp = property.createAnimatedProperty(pathName, 'rectHeight', pathData.s.k, timeOffset);
+			targets.addTarget(animatedProp);
+			animatedProp = property.createAnimatedProperty(pathName, '-position', pathData.s.k, timeOffset);
+			targets.addTarget(animatedProp);
+		}
+		if(pathData.p.a === 0) {
+			pathAttributes.push({
+				key: 'x',
+				value: pathData.p.k[0]
+			})
+			pathAttributes.push({
+				key: 'y',
+				value: pathData.p.k[1]
+			})
+		} else {
+			animatedProp = property.createAnimatedProperty(pathName, 'rectPositionX', pathData.p.k, timeOffset);
+			targets.addTarget(animatedProp);
+			animatedProp = property.createAnimatedProperty(pathName, 'rectPositionY', pathData.p.k, timeOffset);
+			targets.addTarget(animatedProp);
+		}
+		if(pathData.r.a === 0) {
+			if(pathData.r.k !== 0) {
+				pathAttributes.push({
+					key: 'rx',
+					value: pathData.r.k
+				})
+				pathAttributes.push({
+					key: 'ry',
+					value: pathData.r.k
+				})
+			}
+		} else {
+			animatedProp = property.createAnimatedProperty(pathName, 'rx', pathData.r.k, timeOffset);
+			targets.addTarget(animatedProp);
+			animatedProp = property.createAnimatedProperty(pathName, 'ry', pathData.r.k, timeOffset);
+			targets.addTarget(animatedProp);
+		}
+		var pathNode = node.createNodeWithAttributes('rect', pathAttributes, pathName);
+		var finalNode = pathNode;
+
+		var transforms = pathData.transforms;
+		var j, jLen = pathData.level;
+
+		if(!canFlattenPath(transforms, jLen)){
+			for(j = jLen - 1; j >= 0; j -= 1) {
+				nestedArray = [finalNode].concat(createTransformGroup(pathName + naming.GROUP_NAME +'_' + j, JSON.parse(JSON.stringify(transforms[j])), timeOffset));
+				finalNode = node.nestArray(nestedArray);
+			}
+		}
+
+		return finalNode;
 	}
 
 	function buildNewPath(pathList, pathName) {
@@ -399,14 +538,9 @@ function drawable(_drawableData, _level, _timeOffset) {
 
 			if(!canFlattenPath(transforms, jLen)){
 				for(j = jLen - 1; j >= 0; j -= 1) {
-					nestedArray = [finalNode].concat(createTransformGroup(pathName + naming.GROUP_NAME +'_' + j, transforms[j], timeOffset));
+					nestedArray = [finalNode].concat(createTransformGroup(pathName + naming.GROUP_NAME +'_' + j, JSON.parse(JSON.stringify(transforms[j])), timeOffset));
 					finalNode = node.nestArray(nestedArray);
 					var name = node.getAttribute(finalNode, 'id');
-
-					//parentGroupNode = node.createNode('group', pathName + '_gr_' + j);
-					//groupNode = createTransformGroup(parentGroupNode, transforms[j], timeOffset);
-					//node.nestChild(parentGroupNode, finalNode);
-					//finalNode = groupNode;
 				}
 			} else {
 				for(j = 0; j < jLen; j += 1) {
@@ -421,41 +555,37 @@ function drawable(_drawableData, _level, _timeOffset) {
 				currentPath = ' ' + createPathData(pathData.path.ks.k, matrix);
 				finalPathData += currentPath;
 				if(animatedProp) {
-					var aaptAttr = node.getChild(animatedProp,'aapt:attr');
-					var setProp = node.getChild(aaptAttr,'set');
-					var setChildren = node.getChildren(setProp);
-					jLen = setChildren.length;
-					var objectAnimator, value;
+					//var fromValue = node.getAttribute(animatedProp,'from') + ';' + currentPath;
+					//var toValue = node.getAttribute(animatedProp,'to') + ';' + currentPath;
+					var valuesList = node.getAttribute(animatedProp,'values').split(';');
+					jLen = valuesList.length;
+					var valuesValue = '';
 					for(j = 0; j < jLen; j += 1) {
-						value = node.getAttribute(setChildren[j],'android:valueFrom');
-						if(value) { 
-							node.addAttribute(setChildren[j],'android:valueFrom', value + currentPath);
-							value = node.getAttribute(setChildren[j],'android:valueTo');
-							node.addAttribute(setChildren[j],'android:valueTo', value + currentPath);
-						}
+						valuesValue += valuesValue ? ';':'';
+						valuesValue += valuesList[j] + currentPath;
 					}
+					//node.addAttribute(animatedProp,'from', fromValue);
+					//node.addAttribute(animatedProp,'to', toValue);
+					node.addAttribute(animatedProp,'values', valuesValue);
 				}
 			} else {
 				if(animatedProp) {
-					if(pathData.path.ks.k[0].t > 0) {
-						var extraKeyframe = JSON.parse(JSON.stringify(pathData.path.ks.k[0]));
-						extraKeyframe.e = extraKeyframe.s;
-						extraKeyframe.t = 0;
-						pathData.path.ks.k.splice(0,0,extraKeyframe);
-					}
-					var aaptAttr = node.getChild(animatedProp,'aapt:attr');
-					var setProp = node.getChild(aaptAttr,'set');
-					var setChildren = node.getChildren(setProp);
-					jLen = setChildren.length;
-					var objectAnimator, value;
+					var tempAnimatedProp = property.createAnimatedPathData(pathName, pathData.path.ks.k, matrix, '', timeOffset);
+					//var fromValue = node.getAttribute(animatedProp,'from') + ';' + currentPath;
+					//var toValue = node.getAttribute(animatedProp,'to') + ';' + currentPath;
+					var valuesList = node.getAttribute(animatedProp,'values').split(';');
+					var tempValuesList = node.getAttribute(tempAnimatedProp,'values').split(';');
+					var firstKeyframe = pathData.path.ks.k[0];
+					var lastKeyframe = pathData.path.ks.k[pathData.path.ks.k.length - 2];
+					jLen = valuesList.length;
+					var valuesValue = '';
 					for(j = 0; j < jLen; j += 1) {
-						value = node.getAttribute(setChildren[j],'android:valueFrom');
-						if(value) { 
-							node.addAttribute(setChildren[j],'android:valueFrom', value + createPathData(pathData.path.ks.k[j - 1].s[0], matrix));
-							value = node.getAttribute(setChildren[j],'android:valueTo');
-							node.addAttribute(setChildren[j],'android:valueTo', value + createPathData(pathData.path.ks.k[j - 1].e[0], matrix));
-						}
+						valuesValue += valuesValue ? ';':'';
+						valuesValue += valuesList[j] + ' ' + tempValuesList[j];
 					}
+					//node.addAttribute(animatedProp,'from', fromValue);
+					//node.addAttribute(animatedProp,'to', toValue);
+					node.addAttribute(animatedProp,'values', valuesValue);
 				} else {
 					animatedProp = property.createAnimatedPathData(pathName, pathData.path.ks.k, matrix, finalPathData, timeOffset);
 					currentPath = ' ' + createPathData(pathData.path.ks.k[0].s[0], matrix);
@@ -464,6 +594,7 @@ function drawable(_drawableData, _level, _timeOffset) {
 				}
 			}
 
+			/*
 			if(pathData.trimPath) {
 				var trimPathData = pathData.trimPath;
 				var startValue, endValue, offsetValue;
@@ -490,10 +621,11 @@ function drawable(_drawableData, _level, _timeOffset) {
 				}
 				node.addAttribute(pathNode,'android:trimPathStart', startValue);
 				node.addAttribute(pathNode,'android:trimPathEnd', endValue);
-				node.addAttribute(pathNode,'android:trimPathOffset', offsetValue);
+				node.addAttribute(pathNode,'stroke-dashoffset', offsetValue);
 			}
+			*/
 		}
-		node.addAttribute(pathNode,'android:pathData', finalPathData);
+		node.addAttribute(pathNode,'d', finalPathData);
 
 		return finalNode;
 	}
@@ -512,6 +644,21 @@ function drawable(_drawableData, _level, _timeOffset) {
 		return true;
 	}
 
+	function areTransformsEqual(pathList, transforms) {
+		var listTransforms = pathList[0].transforms;
+		if(listTransforms.length !== transforms.length) {
+			return false;
+		}
+		var i = 0, len = listTransforms.length;
+		while(i < len) {
+			if(listTransforms[i] !== transforms[i]){
+				return false;
+			}
+			i += 1;
+		}
+		return true;
+	}
+
 	function exportDrawables(name, _timeOffset) {
 		timeOffset = _timeOffset;
 		var drawableNodes = [];
@@ -522,12 +669,39 @@ function drawable(_drawableData, _level, _timeOffset) {
 		var lastAnimatedPath;
 		for(i = 0; i < len; i += 1) {
 			pathData = paths[i];
-			if(!currentPathList.length 
-				|| (((!hasAnimatedPath && pathData.path.ks.a === 1) || pathData.path.ks.a === 0 || (pathData.path.ks.a === 1 && keyframesAreEqual(lastAnimatedPath.k, pathData.path.ks.k))) && canFlattenPath(pathData.transforms, pathData.level)) && !pathData.trimPath) {
+			if(pathData.type === 'rect') {
+				if(currentPathList.length) {
+					pathName = name + naming.PATH_NAME + '_' + pathCount;
+					nodeElem = buildNewPath(currentPathList, pathName);
+					drawableNodes.push(nodeElem);
+					currentPathList.length = 0;
+					hasAnimatedPath = false;
+					pathCount += 1;
+				}
+				pathName = name + naming.PATH_NAME + '_' + pathCount;
+				nodeElem = buildNewRect(pathData, pathName);
+				drawableNodes.push(nodeElem);
+				pathCount += 1;
+			} else if(pathData.type === 'ellipse') {
+				if(currentPathList.length) {
+					pathName = name + naming.PATH_NAME + '_' + pathCount;
+					nodeElem = buildNewPath(currentPathList, pathName);
+					drawableNodes.push(nodeElem);
+					currentPathList.length = 0;
+					hasAnimatedPath = false;
+					pathCount += 1;
+				}
+				pathName = name + naming.PATH_NAME + '_' + pathCount;
+				nodeElem = buildNewEllipse(pathData, pathName);
+				drawableNodes.push(nodeElem);
+				pathCount += 1;
+			} else if(!currentPathList.length 
+				|| (((!hasAnimatedPath && pathData.path.ks.a === 1) || pathData.path.ks.a === 0 || (pathData.path.ks.a === 1 && keyframesAreEqual(lastAnimatedPath.k, pathData.path.ks.k)))) /* && canFlattenPath(pathData.transforms, pathData.level) */ && areTransformsEqual(currentPathList, pathData.transforms) && !pathData.trimPath) {
 				if(pathData.path.ks.a === 1) {
 					lastAnimatedPath = pathData.path.ks;
 					hasAnimatedPath = true;
 				}
+				currentPathList.push(pathData);
 			} else {
 				pathName = name + naming.PATH_NAME + '_' + pathCount;
 				nodeElem = buildNewPath(currentPathList, pathName);
@@ -535,8 +709,8 @@ function drawable(_drawableData, _level, _timeOffset) {
 				currentPathList.length = 0;
 				hasAnimatedPath = false;
 				pathCount += 1;
+				currentPathList.push(pathData);
 			}
-			currentPathList.push(pathData);
 		}
 		if (currentPathList.length) {
 			pathName = name + naming.PATH_NAME + '_' + pathCount;
