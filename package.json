@@ -1,21 +1,21 @@
 {
-  "name": "bodymovin-to-avd",
+  "name": "bodymovin-to-smil",
   "version": "1.0.5",
-  "description": "Bodymovin to AVD converter",
+  "description": "Bodymovin to SMIL converter",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bodymovin/bodymovin-to-avd.git"
+    "url": "git+https://github.com/bodymovin/bodymovin-to-smil.git"
   },
   "author": "Hernan Torrisi <hernantorrisi@gmail.com> (http://codepen.io/airnan/)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bodymovin/bodymovin-to-avd/issues"
+    "url": "https://github.com/bodymovin/bodymovin-to-smil/issues"
   },
-  "homepage": "https://github.com/bodymovin/bodymovin-to-avd#readme",
+  "homepage": "https://github.com/bodymovin/bodymovin-to-smil#readme",
   "dependencies": {
     "transformation-matrix": "^1.4.0",
     "transformatrix": "^1.1.1",
