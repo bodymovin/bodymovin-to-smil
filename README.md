@@ -18,7 +18,7 @@ var fs = require('fs');
 
 fs.readFile("./data.json",  "utf8",  function(error, data){
 	if(data) {
-		avd_converter(JSON.parse(data))
+		smil_converter(JSON.parse(data))
 		.then(function(xml){
 			fs.writeFile("./animation.svg", xml, function(err) {
 			    if(err) {
