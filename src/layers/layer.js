@@ -53,6 +53,9 @@ function layer(state) {
 			var canReuse = false; //Todo find out if parent has not animated properties to reuse
 			parentNode = factoryInstance.buildParenting(state.layerData.parent, parentNode, groupName, canReuse);
 			parentNode = clipTimeLimits(parentNode, node.getAttribute(parentNode, 'id'), parentWorkAreaOffset);	
+			if(state.layerData.cl){
+				node.addAttribute(gr,'class',state.layerData.cl)
+			}
 		}
 		return parentNode;
 	}
