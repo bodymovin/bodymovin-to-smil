@@ -169,10 +169,27 @@ function formatKeyframes(keyframes, options) {
 	var finalValue, beforeLastFinalValue;
 	//Removing keyframes previous to the zero value.
 	//Check if it's better to set a negative begin time.
-	while(initialValue.t < 0){
-		keyframes.shift();
-		initialValue = keyframes[0];
+	while(initialValue && initialValue.t < 0){
+		if((keyframes[1] && keyframes[1].t > 0) || keyframes.length === 2) {
+			initialValue.t = 0;
+			break;
+		} else {
+			keyframes.shift();
+			initialValue = keyframes[0];
+		}
 	}
+	if(!keyframes.length) {
+		return keyframes;
+	}
+	//Correcting animations that have all keyframes before start of the animation
+	i = keyframes.length - 1;
+	while (i >= 0) {
+		if (i > 0 && keyframes[i].t < keyframes[i - 1].t) {
+			keyframes[i].t = keyframes[i - 1].t
+		}
+		i -= 1;
+	}
+
 	//Adding a keyframe at zero position.
 	if(initialValue.t > 0) {
 		var zeroKeyframe = JSON.parse(JSON.stringify(initialValue));
@@ -212,6 +229,9 @@ function formatKeyframes(keyframes, options) {
  	options.matrix = options.matrix || _matrix.reset();
  	options.staticPath = options.staticPath || '';
  	keyframes = formatKeyframes(keyframes, options);
+ 	if(!keyframes.length) {
+ 		return {};
+ 	}
  	var totalKeyframes = keyframes.length;
  	var initialValue = keyframes[0];
  	var beforeLastFinalValue = keyframes[totalKeyframes - 2];
