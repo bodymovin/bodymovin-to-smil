@@ -90,11 +90,13 @@ function createAnimatedProperty(targetName, propertyType, keyframes, timeOffset)
 		propertyName = propertyType === 'rectPositionY' ? 'y' : 'cy';
 		objectAnimator = createAnimatorObject(keyframes, propertyName, {type:'unidimensional', interpolationType:'unidimensional', timeOffset: timeOffset, index:1}, targetName);
 	} else if(propertyType === 'rectWidth' || propertyType === 'ellipseWidth') {
+		multiplier = propertyType === 'rectWidth' ? 1 : .5
 		propertyName = propertyType === 'rectWidth' ? 'width' : 'rx';
-		objectAnimator = createAnimatorObject(keyframes, propertyName, {type:'unidimensional', interpolationType:'multidimensional', timeOffset: timeOffset, index:0}, targetName);
+		objectAnimator = createAnimatorObject(keyframes, propertyName, {type:'unidimensional', interpolationType:'multidimensional', timeOffset: timeOffset, index:0, multiplier: multiplier}, targetName);
 	} else if(propertyType === 'rectHeight' || propertyType === 'ellipseHeight') {
+		multiplier = propertyType === 'rectHeight' ? 1 : .5
 		propertyName = propertyType === 'rectHeight' ? 'height' : 'ry';
-		objectAnimator = createAnimatorObject(keyframes, propertyName, {type:'unidimensional', interpolationType:'multidimensional', timeOffset: timeOffset, index:1}, targetName);
+		objectAnimator = createAnimatorObject(keyframes, propertyName, {type:'unidimensional', interpolationType:'multidimensional', timeOffset: timeOffset, index:1, multiplier: multiplier}, targetName);
 	}
 	return objectAnimator;
 }
@@ -235,7 +237,6 @@ function formatKeyframes(keyframes, options) {
  	var initialValue = keyframes[0];
  	var finalValue = keyframes[totalKeyframes - 1];
  	var duration = finalValue.t - initialValue.t;
-
 
  	var startOffset = initialValue.t + options.timeOffset;
  	var hasMotionPath = keyframes[0].to && options.type === 'combined';
@@ -514,19 +515,19 @@ function formatKeyframes(keyframes, options) {
 	for( i = 0; i < len; i += 1) {
 		keyValues += keyValues === '' ? '':';'
 		if(dimensions === 'multidimensional' || dimensions === 'combined') {
-			keyValues += (i === len - 1) ? keyframes[i-1].s[0] * multiplier + ' ' + keyframes[i-1].s[1] * multiplier : keyframes[i].s[0] * multiplier + ' ' + keyframes[i].s[1] * multiplier
+			keyValues += keyframes[i].s[0] * multiplier + ' ' + keyframes[i].s[1] * multiplier
 		} else if (dimensions === 'path') {
 			var staticPath = options.staticPath
 			var matrix = options.matrix
 			keyValues += staticPath
-			keyValues += (i === len - 1 && keyframes[i-1].h !== 1) ? createPathData(keyframes[i-1].s[0], matrix) : createPathData(keyframes[i].s[0], matrix)
+			keyValues += createPathData(keyframes[i].s[0], matrix)
 		} else if (dimensions === 'color') {
-			keyValues += (i === len - 1) ? rgbHex(keyframes[i-1].s[0]*255, keyframes[i-1].s[1]*255, keyframes[i-1].s[2]*255) : rgbHex(keyframes[i].s[0]*255, keyframes[i].s[1]*255, keyframes[i].s[2]*255)
+			keyValues += rgbHex(keyframes[i].s[0]*255, keyframes[i].s[1]*255, keyframes[i].s[2]*255)
 		} else {
 			if(options.index !== undefined) {
-				keyValues += (i === len - 1) ? keyframes[i-1].s[options.index] * multiplier : keyframes[i].s[options.index] * multiplier
+				keyValues += keyframes[i].s[options.index] * multiplier
 			} else {
-				keyValues += (i === len - 1) ? keyframes[i-1].s * multiplier : keyframes[i].s * multiplier
+				keyValues += keyframes[i].s * multiplier
 			}
 		}
 	}
@@ -544,6 +545,10 @@ function formatKeyframes(keyframes, options) {
 	return keyTimes;
  }
 
+ function limitKeySplineValue(val) {
+	return Math.max(0, Math.min(1, val));
+ }
+
  function buildKeySplines(keyframes, options) {
  	var i, len = keyframes.length;
 	var keySplines = '';
@@ -553,15 +558,15 @@ function formatKeyframes(keyframes, options) {
 		if(keyframes[i].h === 1) {
 			keySplines += '0 0 1 1';
 		} else if(interpolationType === 'multidimensional') {
-			keySplines += keyframes[i].o.x[0] + ' ';
-			keySplines += keyframes[i].o.y[0] + ' ';
-			keySplines += keyframes[i].i.x[0] + ' ';
-			keySplines += keyframes[i].i.y[0];
+			keySplines += limitKeySplineValue(keyframes[i].o.x[0]) + ' ';
+			keySplines += limitKeySplineValue(keyframes[i].o.y[0]) + ' ';
+			keySplines += limitKeySplineValue(keyframes[i].i.x[0]) + ' ';
+			keySplines += limitKeySplineValue(keyframes[i].i.y[0]);
 		} else {
-			keySplines += keyframes[i].o.x + ' ';
-			keySplines += keyframes[i].o.y + ' ';
-			keySplines += keyframes[i].i.x + ' ';
-			keySplines += keyframes[i].i.y;
+			keySplines += limitKeySplineValue(keyframes[i].o.x) + ' ';
+			keySplines += limitKeySplineValue(keyframes[i].o.y) + ' ';
+			keySplines += limitKeySplineValue(keyframes[i].i.x) + ' ';
+			keySplines += limitKeySplineValue(keyframes[i].i.y);
 		}
 	}
  	return keySplines;
