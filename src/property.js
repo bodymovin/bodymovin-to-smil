@@ -19,6 +19,7 @@ function createAnimatedPropertyFromStaticValue(targetName, propertyType, propert
 			}
 		},
 		{
+			s: property,
 			t: timeCap
 		}
 	]
@@ -164,7 +165,8 @@ function formatKeyframes(keyframes, options) {
 	}
 	var initialValue = keyframes[0];
 	var hasMotionPath = !!keyframes[0].to;
-	var finalValue, beforeLastFinalValue;
+	var finalValue;
+	// var beforeLastFinalValue;
 	//Removing keyframes previous to the zero value.
 	//Check if it's better to set a negative begin time.
 	while(initialValue && initialValue.t < 0){
@@ -204,8 +206,8 @@ function formatKeyframes(keyframes, options) {
 		totalKeyframes -= 1;
 		finalValue = keyframes[totalKeyframes - 1];
 	}
-	beforeLastFinalValue = keyframes[totalKeyframes - 1];
-	finalValue.s = beforeLastFinalValue.s;
+	// beforeLastFinalValue = keyframes[totalKeyframes - 1];
+	// finalValue.s = beforeLastFinalValue.s;
 	if(hasMotionPath) {
 		resetMotionPath(finalValue);
 	}
@@ -231,7 +233,6 @@ function formatKeyframes(keyframes, options) {
  	}
  	var totalKeyframes = keyframes.length;
  	var initialValue = keyframes[0];
- 	var beforeLastFinalValue = keyframes[totalKeyframes - 2];
  	var finalValue = keyframes[totalKeyframes - 1];
  	var duration = finalValue.t - initialValue.t;
 
@@ -298,7 +299,6 @@ function formatKeyframes(keyframes, options) {
 	 		value: 'XML'
 	 	})
  	}
-
  	if(hasMotionPath) {
 
  	} else if (options.type === 'multidimensional') {
@@ -307,17 +307,10 @@ function formatKeyframes(keyframes, options) {
  			value: initialValue.s[0] * options.multiplier + ' ' + initialValue.s[1] * options.multiplier
  		})
 
- 		if(beforeLastFinalValue.h === 1) {
-	 		attributes.push({
-	 			key: 'to',
-	 			value: beforeLastFinalValue.s[0] * options.multiplier + ' ' + beforeLastFinalValue.s[1] * options.multiplier
-	 		})
- 		} else {
-	 		attributes.push({
-	 			key: 'to',
-	 			value: beforeLastFinalValue.s[0] * options.multiplier + ' ' + beforeLastFinalValue.s[1] * options.multiplier
-	 		})
- 		}
+ 		attributes.push({
+			key: 'to',
+			value: finalValue.s[0] * options.multiplier + ' ' + finalValue.s[1] * options.multiplier
+		})
  	} else if (options.type === 'unidimensional') {
  		if(options.index !== undefined) {
 			attributes.push({
@@ -332,29 +325,15 @@ function formatKeyframes(keyframes, options) {
  		}
  		
  		if(options.index !== undefined) {
- 			if(beforeLastFinalValue.h === 1) {
-				attributes.push({
-		 			key: 'to',
-		 			value: beforeLastFinalValue.s[options.index] * options.multiplier
-		 		})
-			} else {
-				attributes.push({
-		 			key: 'to',
-		 			value: beforeLastFinalValue.s[options.index] * options.multiplier
-		 		})
-			}
+			attributes.push({
+				key: 'to',
+				value: finalValue.s[options.index] * options.multiplier
+			})
  		} else {
- 			if(initialValue.h === 1) {
-		 		attributes.push({
-		 			key: 'to',
-		 			value: beforeLastFinalValue.s * options.multiplier
-		 		})
-	 		} else {
-		 		attributes.push({
-		 			key: 'to',
-		 			value: beforeLastFinalValue.s * options.multiplier
-		 		})
-	 		}
+			attributes.push({
+				key: 'to',
+				value: finalValue.s * options.multiplier
+			})
  		}
  		
  	} else if (options.type === 'path') {
@@ -362,33 +341,19 @@ function formatKeyframes(keyframes, options) {
  			key: 'from',
  			value: options.staticPath + createPathData(initialValue.s[0], options.matrix)
  		})
- 		if(initialValue.h === 1) {
-	 		attributes.push({
-	 			key: 'to',
-	 			value: options.staticPath + createPathData(beforeLastFinalValue.s[0], options.matrix)
-	 		})
- 		} else {
-	 		attributes.push({
-	 			key: 'to',
-	 			value: options.staticPath + createPathData(beforeLastFinalValue.s[0], options.matrix)
-	 		})
- 		}
+ 		attributes.push({
+			key: 'to',
+			value: options.staticPath + createPathData(finalValue.s[0], options.matrix)
+		})
  	} else if (options.type === 'color') {
  		attributes.push({
  			key: 'from',
  			value: rgbHex(initialValue.s[0]*255, initialValue.s[1]*255, initialValue.s[2]*255)
  		})
- 		if(initialValue.h === 1) {
-	 		attributes.push({
-	 			key: 'to',
-	 			value: rgbHex(initialValue.s[0]*255, initialValue.s[1]*255, initialValue.s[2]*255)
-	 		})
- 		} else {
-	 		attributes.push({
-	 			key: 'to',
-	 			value: rgbHex(initialValue.s[0]*255, initialValue.s[1]*255, initialValue.s[2]*255)
-	 		})
- 		}
+ 		attributes.push({
+			key: 'to',
+			value: rgbHex(initialValue.s[0]*255, initialValue.s[1]*255, initialValue.s[2]*255)
+		})
  	} else if (options.type === 'combined') {
  		attributes.push({
  			key: 'from',
