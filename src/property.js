@@ -273,7 +273,7 @@ function formatKeyframes(keyframes, options) {
  	},
  	{
  		key: 'dur',
- 		value: animationDurationInFrames / frameRate + 's'
+ 		value: Math.round(10000000*(animationDurationInFrames / frameRate))/10000000 + 's'
  	},
  	{
  		key: 'begin',
