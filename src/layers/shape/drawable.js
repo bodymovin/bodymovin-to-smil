@@ -437,7 +437,8 @@ function drawable(_drawableData, _level, _timeOffset) {
 		var transforms = pathData.transforms;
 		var j, jLen = pathData.level;
 
-		if(!canFlattenPath(transforms, jLen)){
+		// Commented the condition since it seems that transforms need to be applied
+		// if(!canFlattenPath(transforms, jLen)){
 			for(j = jLen - 1; j >= 0; j -= 1) {
 				if (transforms[j].o.a === 1) {
 					const animatedProperty = property.createAnimatedProperty(pathName, 'opacity', transforms[j].o.k, timeOffset);
@@ -448,7 +449,7 @@ function drawable(_drawableData, _level, _timeOffset) {
 				nestedArray = [finalNode].concat(createTransformGroup(pathName + naming.GROUP_NAME +'_' + j, JSON.parse(JSON.stringify(transforms[j])), timeOffset));
 				finalNode = node.nestArray(nestedArray);
 			}
-		}
+		// }
 
 		return finalNode;
 	}
@@ -514,7 +515,8 @@ function drawable(_drawableData, _level, _timeOffset) {
 		var transforms = pathData.transforms;
 		var j, jLen = pathData.level;
 
-		if(!canFlattenPath(transforms, jLen)){
+		// Commented the condition since it seems that transforms need to be applied
+		// if(!canFlattenPath(transforms, jLen)){
 			for(j = jLen - 1; j >= 0; j -= 1) {
 				if (transforms[j].o.a === 1) {
 					const animatedProperty = property.createAnimatedProperty(pathName, 'opacity', transforms[j].o.k, timeOffset);
@@ -525,7 +527,7 @@ function drawable(_drawableData, _level, _timeOffset) {
 				nestedArray = [finalNode].concat(createTransformGroup(pathName + naming.GROUP_NAME +'_' + j, JSON.parse(JSON.stringify(transforms[j])), timeOffset));
 				finalNode = node.nestArray(nestedArray);
 			}
-		}
+		// }
 
 		return finalNode;
 	}
