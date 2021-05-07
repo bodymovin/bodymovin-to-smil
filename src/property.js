@@ -12,7 +12,6 @@ function createAnimatedPropertyFromStaticValue(targetName, propertyType, propert
 	var keyframes = [
 		{
 			s: property,
-			e: property,
 			t: 0,
 			o:{
 			},
@@ -33,7 +32,6 @@ function createAnimatedPropertyFromStaticValue(targetName, propertyType, propert
 function createAnimatedProperty(targetName, propertyType, keyframes, timeOffset) {
 	if(keyframes[0].t > 0) {
 		var extraKeyframe = JSON.parse(JSON.stringify(keyframes[0]));
-		extraKeyframe.e = extraKeyframe.s;
 		extraKeyframe.t = 0;
 		if(extraKeyframe.to){
 			extraKeyframe.to = [0,0];
@@ -206,9 +204,8 @@ function formatKeyframes(keyframes, options) {
 		totalKeyframes -= 1;
 		finalValue = keyframes[totalKeyframes - 1];
 	}
-	beforeLastFinalValue = keyframes[totalKeyframes - 2];
-	finalValue.s = beforeLastFinalValue.h === 1 ? beforeLastFinalValue.s : beforeLastFinalValue.e;
-	finalValue.e = finalValue.s;
+	beforeLastFinalValue = keyframes[totalKeyframes - 1];
+	finalValue.s = beforeLastFinalValue.s;
 	if(hasMotionPath) {
 		resetMotionPath(finalValue);
 	}
@@ -318,7 +315,7 @@ function formatKeyframes(keyframes, options) {
  		} else {
 	 		attributes.push({
 	 			key: 'to',
-	 			value: beforeLastFinalValue.e[0] * options.multiplier + ' ' + beforeLastFinalValue.e[1] * options.multiplier
+	 			value: beforeLastFinalValue.s[0] * options.multiplier + ' ' + beforeLastFinalValue.s[1] * options.multiplier
 	 		})
  		}
  	} else if (options.type === 'unidimensional') {
@@ -343,7 +340,7 @@ function formatKeyframes(keyframes, options) {
 			} else {
 				attributes.push({
 		 			key: 'to',
-		 			value: beforeLastFinalValue.e[options.index] * options.multiplier
+		 			value: beforeLastFinalValue.s[options.index] * options.multiplier
 		 		})
 			}
  		} else {
@@ -355,7 +352,7 @@ function formatKeyframes(keyframes, options) {
 	 		} else {
 		 		attributes.push({
 		 			key: 'to',
-		 			value: beforeLastFinalValue.e * options.multiplier
+		 			value: beforeLastFinalValue.s * options.multiplier
 		 		})
 	 		}
  		}
@@ -373,7 +370,7 @@ function formatKeyframes(keyframes, options) {
  		} else {
 	 		attributes.push({
 	 			key: 'to',
-	 			value: options.staticPath + createPathData(beforeLastFinalValue.e[0], options.matrix)
+	 			value: options.staticPath + createPathData(beforeLastFinalValue.s[0], options.matrix)
 	 		})
  		}
  	} else if (options.type === 'color') {
@@ -389,7 +386,7 @@ function formatKeyframes(keyframes, options) {
  		} else {
 	 		attributes.push({
 	 			key: 'to',
-	 			value: rgbHex(initialValue.e[0]*255, initialValue.e[1]*255, initialValue.e[2]*255)
+	 			value: rgbHex(initialValue.s[0]*255, initialValue.s[1]*255, initialValue.s[2]*255)
 	 		})
  		}
  	} else if (options.type === 'combined') {
@@ -399,7 +396,7 @@ function formatKeyframes(keyframes, options) {
  		})
  		attributes.push({
  			key: 'to',
- 			value: keyframes[totalKeyframes - 2].e[0] + ' ' + keyframes[totalKeyframes - 2].e[1]
+ 			value: keyframes[totalKeyframes - 1].s[0] + ' ' + keyframes[totalKeyframes - 1].s[1]
  		})
  		/*var pathValue = 'M ' + initialValue.s[0] + ',' + initialValue.s[1];
  		pathValue += 'C ' + (initialValue.s[0] + initialValue.to[0]) + ',' + (initialValue.s[1]  + initialValue.to[1]);
@@ -479,7 +476,7 @@ function formatKeyframes(keyframes, options) {
  	}
  	for(i = 0;i < len - 1;i += 1) {
  		pathDataArr.v[i] = [keyframes[i].s[0],keyframes[i].s[1]];
- 		pathDataArr.v[i+1] = [keyframes[i].e[0],keyframes[i].e[1]];
+ 		pathDataArr.v[i+1] = [keyframes[i + 1].s[0],keyframes[i + 1].s[1]];
  		pathDataArr.o[i] = [keyframes[i].to[0],keyframes[i].to[1]];
  		pathDataArr.i[i+1] = [keyframes[i].ti[0],keyframes[i].ti[1]];
  	}
@@ -552,19 +549,19 @@ function formatKeyframes(keyframes, options) {
 	for( i = 0; i < len; i += 1) {
 		keyValues += keyValues === '' ? '':';'
 		if(dimensions === 'multidimensional' || dimensions === 'combined') {
-			keyValues += (i === len - 1) ? keyframes[i-1].e[0] * multiplier + ' ' + keyframes[i-1].e[1] * multiplier : keyframes[i].s[0] * multiplier + ' ' + keyframes[i].s[1] * multiplier
+			keyValues += (i === len - 1) ? keyframes[i-1].s[0] * multiplier + ' ' + keyframes[i-1].s[1] * multiplier : keyframes[i].s[0] * multiplier + ' ' + keyframes[i].s[1] * multiplier
 		} else if (dimensions === 'path') {
 			var staticPath = options.staticPath
 			var matrix = options.matrix
 			keyValues += staticPath
-			keyValues += (i === len - 1 && keyframes[i-1].h !== 1) ? createPathData(keyframes[i-1].e[0], matrix) : createPathData(keyframes[i].s[0], matrix)
+			keyValues += (i === len - 1 && keyframes[i-1].h !== 1) ? createPathData(keyframes[i-1].s[0], matrix) : createPathData(keyframes[i].s[0], matrix)
 		} else if (dimensions === 'color') {
-			keyValues += (i === len - 1) ? rgbHex(keyframes[i-1].e[0]*255, keyframes[i-1].e[1]*255, keyframes[i-1].e[2]*255) : rgbHex(keyframes[i].s[0]*255, keyframes[i].s[1]*255, keyframes[i].s[2]*255)
+			keyValues += (i === len - 1) ? rgbHex(keyframes[i-1].s[0]*255, keyframes[i-1].s[1]*255, keyframes[i-1].s[2]*255) : rgbHex(keyframes[i].s[0]*255, keyframes[i].s[1]*255, keyframes[i].s[2]*255)
 		} else {
 			if(options.index !== undefined) {
-				keyValues += (i === len - 1) ? keyframes[i-1].e[options.index] * multiplier : keyframes[i].s[options.index] * multiplier
+				keyValues += (i === len - 1) ? keyframes[i-1].s[options.index] * multiplier : keyframes[i].s[options.index] * multiplier
 			} else {
-				keyValues += (i === len - 1) ? keyframes[i-1].e * multiplier : keyframes[i].s * multiplier
+				keyValues += (i === len - 1) ? keyframes[i-1].s * multiplier : keyframes[i].s * multiplier
 			}
 		}
 	}
