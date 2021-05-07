@@ -439,6 +439,12 @@ function drawable(_drawableData, _level, _timeOffset) {
 
 		if(!canFlattenPath(transforms, jLen)){
 			for(j = jLen - 1; j >= 0; j -= 1) {
+				if (transforms[j].o.a === 1) {
+					const animatedProperty = property.createAnimatedProperty(pathName, 'opacity', transforms[j].o.k, timeOffset);
+					targets.addTarget(animatedProperty);
+				} else if(transforms[j].o.k !== 100) {
+					node.addAttribute(finalNode,'opacity', transforms[j].o.k*0.01);
+				}
 				nestedArray = [finalNode].concat(createTransformGroup(pathName + naming.GROUP_NAME +'_' + j, JSON.parse(JSON.stringify(transforms[j])), timeOffset));
 				finalNode = node.nestArray(nestedArray);
 			}
@@ -510,6 +516,12 @@ function drawable(_drawableData, _level, _timeOffset) {
 
 		if(!canFlattenPath(transforms, jLen)){
 			for(j = jLen - 1; j >= 0; j -= 1) {
+				if (transforms[j].o.a === 1) {
+					const animatedProperty = property.createAnimatedProperty(pathName, 'opacity', transforms[j].o.k, timeOffset);
+					targets.addTarget(animatedProperty);
+				} else if(transforms[j].o.k !== 100) {
+					node.addAttribute(finalNode,'opacity', transforms[j].o.k*0.01);
+				}
 				nestedArray = [finalNode].concat(createTransformGroup(pathName + naming.GROUP_NAME +'_' + j, JSON.parse(JSON.stringify(transforms[j])), timeOffset));
 				finalNode = node.nestArray(nestedArray);
 			}
@@ -537,10 +549,16 @@ function drawable(_drawableData, _level, _timeOffset) {
 			matrix.reset();
 
 			if(!canFlattenPath(transforms, jLen)){
+				
 				for(j = jLen - 1; j >= 0; j -= 1) {
+					if (transforms[j].o.a === 1) {
+						const animatedProperty = property.createAnimatedProperty(pathName, 'opacity', transforms[j].o.k, timeOffset);
+						targets.addTarget(animatedProperty);
+					} else if(transforms[j].o.k !== 100) {
+						node.addAttribute(finalNode,'opacity', transforms[j].o.k*0.01);
+					}
 					nestedArray = [finalNode].concat(createTransformGroup(pathName + naming.GROUP_NAME +'_' + j, JSON.parse(JSON.stringify(transforms[j])), timeOffset));
 					finalNode = node.nestArray(nestedArray);
-					var name = node.getAttribute(finalNode, 'id');
 				}
 			} else {
 				for(j = 0; j < jLen; j += 1) {
