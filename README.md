@@ -36,3 +36,5 @@ fs.readFile("./data.json",  "utf8",  function(error, data){
 ````
 
 ### Keep in mind that not all browsers support SMIL
+
+### current push supports latest version of lottie
