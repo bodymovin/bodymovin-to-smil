@@ -29,20 +29,18 @@ function getTargetByNameAndProperty(name, property) {
 	return null;
 }
 
-function buildTargets(avd) {
-	var defs = node.createNode('defs');
+function buildTargets(defs) {
 	var target;
 	var i, len = _targets.length;
 	for(i = 0; i < len; i += 1) {
 		target = _targets[i];
 		node.nestChild(defs, target);
 	} 
-	node.nestChild(avd, defs);
 }
 
 module.exports = {
 	resetTargets: resetTargets,
 	addTarget: addTarget,
 	getTargetByNameAndProperty: getTargetByNameAndProperty,
-	buildTargets: buildTargets
+	buildTargets: buildTargets,
 };

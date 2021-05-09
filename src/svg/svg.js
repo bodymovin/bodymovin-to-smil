@@ -82,9 +82,11 @@ function svg(_animationData) {
 			targets.resetTargets();
 			var svgAttributes = attributes.concat(addSizeAttributes(animationData.w, animationData.h));
 			var svgElem = node.createNodeWithAttributes('svg', svgAttributes);
+			var defs = node.createNode('defs');
+			node.nestChild(svgElem, defs);
 			node.nestChild(svgElem, _composition.exportNode(naming.ROOT_NAME));
 			node.nestChild(svgElem, createTimeRangeObject())
-			targets.buildTargets(svgElem);
+			targets.buildTargets(defs);
 			resolve(svgElem);
 		})
 		return promise;
