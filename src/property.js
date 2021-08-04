@@ -157,8 +157,25 @@ function createControlPoints(keyframe, interpolationType) {
 	}
 }
 
+// Converts hold keyframes into a new keyframe with its time as close to the next keyframe as possible to simulate no transition
+// TODO: if all keyframes are hold frames, a discrete calcMode could be used
+// TODO: look into improving the time calculation of 0.00001 to something more accurate.
+function formatHoldKeyframes(keyframes) {
+	var i;
+	for(i=0;i<keyframes.length;i+=1){
+		if (i < keyframes.length - 1 && keyframes[i].h) {
+			var cloneKeyframe = JSON.parse(JSON.stringify(keyframes[i]));
+			cloneKeyframe.t = keyframes[i + 1].t - 0.00001;
+			keyframes.splice(i + 1, 0, cloneKeyframe);
+			i += 1;
+		}
+	}
+	return keyframes;
+}
+
 function formatKeyframes(keyframes, options) {
 	var animationDurationInFrames = timing.getDuration('frames');
+	formatHoldKeyframes(keyframes);
 	if(options.timeOffset) {
 		var i, len = keyframes.length;
 		for(i=0;i<len;i+=1){
