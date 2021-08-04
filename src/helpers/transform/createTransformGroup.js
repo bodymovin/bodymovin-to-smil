@@ -79,7 +79,11 @@ function createTransformGroup(name, transform, timeOffset, _container) {
 				animatedProperty = property.createAnimatedProperty(currentName, 'position', transform.p.k, timeOffset);
 				targets.addTarget(animatedProperty);
 		} else {
-			addToTransform('translate(' + transform.p.k[0] + ', ' + transform.p.k[1] + ')');
+			if(transform.p.s) {
+				addToTransform('translate(' + transform.p.x.k + ', ' + transform.p.y.k + ')');
+			} else {
+				addToTransform('translate(' + transform.p.k[0] + ', ' + transform.p.k[1] + ')');
+			}
 		}
 	}
 	if (hasAnimation) {
