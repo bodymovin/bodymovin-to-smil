@@ -6,9 +6,8 @@ var node = require('./node');
 var svgFactory = require('./svg/svg');
 var config = require('./config');
 
- module.exports = function convert(animation) {
+function convert(animation) {
  	return new Promise(function(resolve, reject){
- 		var targets = [];
 	 	//
 	 	var _svg = svgFactory();
 	 	_svg.processAnimation(animation)
@@ -24,6 +23,6 @@ var config = require('./config');
 	 	//
 	 })
  };
- convert.version = '1.0.9'
+ convert.version = '1.0.10'
 
  module.exports = convert

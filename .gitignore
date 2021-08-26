@@ -4,3 +4,4 @@ test.js
 exports/
 node_modules/
 lib/
+test/

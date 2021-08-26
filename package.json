@@ -1,11 +1,11 @@
 {
   "name": "bodymovin-to-smil",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Bodymovin to SMIL converter",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify src/index.js -o lib/build.js -t [ babelify --presets [ babel-preset-es2015 ] ]"
+    "build": "rollup src/index.js --file lib/build.js --format umd --name \"bodymovin-to-smil\""
   },
   "repository": {
     "type": "git",
@@ -23,6 +23,7 @@
     "xml": "^1.0.1"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^20.0.0",
     "babel-cli": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
     "babelify": "^7.3.0",
