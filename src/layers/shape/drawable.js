@@ -395,6 +395,7 @@ function drawable(_drawableData, _level, _timeOffset) {
 	}
 
 	function buildNewEllipse(pathData, pathName) {
+		var animatedProp, nestedArray;
 		var pathAttributes = [].concat(getDrawingAttributes(pathName));
 		if(pathData.s.a === 0) {
 			pathAttributes.push({
@@ -455,6 +456,7 @@ function drawable(_drawableData, _level, _timeOffset) {
 	}
 
 	function buildNewRect(pathData, pathName) {
+		var animatedProp, nestedArray;
 		var pathAttributes = [].concat(getDrawingAttributes(pathName));
 		if(pathData.s.a === 0) {
 			pathAttributes.push({

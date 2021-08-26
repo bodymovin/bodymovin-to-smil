@@ -23,6 +23,7 @@ function layer(state) {
 
 	function exportNode(name, parentWorkAreaOffset) {
 		var groupName = name + naming.GROUP_NAME;
+		var animatedProperty;
 		var rootMasks = factoryInstance.getMasks(name);
 		var gr = node.createNode('g', groupName);
 		var subGr;
