@@ -30,7 +30,24 @@ function createAnimatedPropertyFromStaticValue(targetName, propertyType, propert
 	return createAnimatedProperty(targetName, propertyType, keyframes, timeOffset);
 }
 
-function createAnimatedProperty(targetName, propertyType, keyframes, timeOffset) {
+function convertPositionKeyframes(keyframes, propertyName, config = {coord: 0}) {
+	return keyframes.map(keyframe => {
+		let pos = [];
+		if(propertyName === 'positionX') {
+			pos.push(keyframe.s[0]);
+			pos.push(config.coord);
+		} else {
+			pos.push(config.coord);
+			pos.push(keyframe.s[0]);
+		}
+		return {
+			...keyframe,
+			s: pos,
+		}
+	})
+}
+
+function createAnimatedProperty(targetName, propertyType, keyframes, timeOffset, config) {
 	if(keyframes[0].t > 0) {
 		var extraKeyframe = JSON.parse(JSON.stringify(keyframes[0]));
 		extraKeyframe.t = 0;
@@ -54,8 +71,9 @@ function createAnimatedProperty(targetName, propertyType, keyframes, timeOffset)
 		}
 		
 	} else if(propertyType === 'positionX' || propertyType === 'positionY') {
-		propertyName = propertyType === 'positionX' ? 'translateX' : 'translateY';
-		objectAnimator = createAnimatorObject(keyframes[i - 1], keyframes[i], propertyName, {type:'unidimensional', interpolationType:'unidimensional', timeOffset: timeOffset});
+		propertyName = 'translate';
+		var tranformKeyframes = convertPositionKeyframes(keyframes, propertyType, config);
+		objectAnimator = createAnimatorObject(tranformKeyframes, propertyName, {type:'multidimensional', interpolationType:'unidimensional', multiplier:multiplier, timeOffset: timeOffset}, targetName);
 		
 	} else if(propertyType === '-anchor' || propertyType === 'anchor') {
 		multiplier = propertyType === '-anchor' ? -1 : 1;

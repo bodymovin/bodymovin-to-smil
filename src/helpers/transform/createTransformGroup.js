@@ -52,7 +52,7 @@ function createTransformGroup(name, transform, timeOffset, _container) {
 	if(_container) {
 		container = _container;
 	} else {
-		currentName = name + naming.TRANSFORM_NAME + '_' + + nodes.length;
+		currentName = name + naming.TRANSFORM_NAME + '_' + nodes.length;
 		container = node.createNode('g', currentName);
 	}
 	nodes.push(container);
@@ -76,8 +76,31 @@ function createTransformGroup(name, transform, timeOffset, _container) {
 	if (needsTransform) {
 		if (isPositionAnimated(transform.p)) {
 				hasAnimation = true;
-				animatedProperty = property.createAnimatedProperty(currentName, 'position', transform.p.k, timeOffset);
-				targets.addTarget(animatedProperty);
+				// If transform has separate dimensions
+				if (transform.p.s) {
+					if (transform.p.x.a === 0 || transform.p.y.a === 0) {
+						if (transform.p.x.a === 1) {
+							animatedProperty = property.createAnimatedProperty(currentName, 'positionX', transform.p.x.k, timeOffset, {coord: transform.p.y.k});
+							targets.addTarget(animatedProperty);
+						} else {
+							animatedProperty = property.createAnimatedProperty(currentName, 'positionY', transform.p.y.k, timeOffset, {coord: transform.p.x.k});
+							targets.addTarget(animatedProperty);
+						}
+					} else {
+						animatedProperty = property.createAnimatedProperty(currentName, 'positionX', transform.p.x.k, timeOffset);
+						targets.addTarget(animatedProperty);
+						var innerName = name + naming.TRANSFORM_NAME + '_' + nodes.length;
+						var innerContainer = node.createNode('g', innerName);
+						nodes.push(innerContainer);
+						container = innerContainer;
+						animatedProperty = property.createAnimatedProperty(innerName, 'positionY', transform.p.y.k, timeOffset);
+						targets.addTarget(animatedProperty);
+					}
+				} else {
+
+					animatedProperty = property.createAnimatedProperty(currentName, 'position', transform.p.k, timeOffset);
+					targets.addTarget(animatedProperty);
+				}
 		} else {
 			if(transform.p.s) {
 				addToTransform('translate(' + transform.p.x.k + ', ' + transform.p.y.k + ')');
