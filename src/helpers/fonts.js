@@ -12,8 +12,7 @@ function addFonts(fontList) {
 }
 
 function getFontDataByName(name) {
-	var i = 0, len = fontFamilies.length;
-	while(i < len) {
+	for(var i = 0; i < fontFamilies.length; i++) {
 		if(fontFamilies[i].fName === name) {
 			return fontFamilies[i];
 		}
